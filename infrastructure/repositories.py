@@ -1,5 +1,8 @@
 from abc import ABC, abstractmethod
 from domain.models import Book
+import logging
+
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 
 class BookRepositoryInterface(ABC):
@@ -52,6 +55,7 @@ class BookRepository(BookRepositoryInterface):
         if any(b.id == book.id for b in self.books):
             raise ValueError(f"Книга с ID {book.id} уже существует.")
         self.books.append(book)
+        logging.info(f"Книга '{book.title}' добавлена в репозиторий.")
 
     def remove(self, book_id: int) -> None:
         """Удаляет книгу из репозитория по ID.
@@ -62,6 +66,7 @@ class BookRepository(BookRepositoryInterface):
         for i, book in enumerate(self.books):
             if book.id == book_id:
                 del self.books[i]
+                logging.info(f"Книга с ID {book_id} удалена из репозитория.")
                 return
         raise ValueError(f"Книга с ID {book_id} не найдена.")
 
@@ -81,22 +86,24 @@ class BookRepository(BookRepositoryInterface):
         return self.books
 
     def get_next_id(self) -> int:
-       """Генерирует уникальный идентификатор для новой книги.
+        """Генерирует уникальный идентификатор для новой книги.
 
        :return: Следующий уникальный идентификатор книги.
        """
-       return len(self.books) + 1  # Генерация уникального ID
+        return len(self.books) + 1
 
     def update_status(self, book_id: int, new_status: str) -> None:
-       """Обновляет статус книги по ID.
+        """Обновляет статус книги по ID.
 
        :param book_id: Уникальный идентификатор книги.
        :param new_status: Новый статус книги ("в наличии" или "выдана").
        :raises ValueError: Если книга с указанным ID не найдена.
        """
-       for book in self.books:
-           if book.id == book_id:
-               book.status = new_status
-               return
-       raise ValueError(f"Книга с ID {book_id} не найдена.")
+        for book in self.books:
+            if book.id == book_id:
+                old_status = book.status  # Сохраняем старый статус для логирования
+                book.status = new_status
+                logging.info(f"Статус книги с ID {book_id} изменен с '{old_status}' на '{new_status}'.")
+                return
 
+        raise ValueError(f"Книга с ID {book_id} не найдена.")
