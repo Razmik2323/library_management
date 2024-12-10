@@ -93,7 +93,7 @@ def update_status(library_service: LibraryService) -> str:
     except Exception as e:
         logging.error(f"Ошибка при обновлении статуса книги: {e}")
 
-def exit_program(library_service) -> None:
+def exit_program(library_service: LibraryService) -> None:
     """Сохраняет книги в файл и завершает программу."""
     DataStorage.save_to_file('library.json', library_service.display_books())
     logging.info("Выход из приложения.")
