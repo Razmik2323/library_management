@@ -99,3 +99,4 @@ class BookRepository(BookRepositoryInterface):
                book.status = new_status
                return
        raise ValueError(f"Книга с ID {book_id} не найдена.")
+

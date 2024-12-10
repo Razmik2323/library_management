@@ -52,4 +52,3 @@ class LibraryService:
         :param new_status: Новый статус книги ("в наличии" или "выдана").
         """
         self.repository.update_status(book_id, new_status)
-
