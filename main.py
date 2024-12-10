@@ -1,9 +1,10 @@
 import sys
-
+import logging
 from application.services import LibraryService
 from infrastructure.repositories import BookRepository
 from infrastructure.data_storage import DataStorage
 
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 def display_menu() -> None:
     """Отображает меню приложения."""
@@ -27,9 +28,11 @@ def add_book(library_service: LibraryService) -> str:
     try:
         year = int(input("Введите год издания книги: "))
         library_service.add_book(title, author, year)
-        return "Книга успешно добавлена."
+        logging.info(f"Книга '{title}' успешно добавлена.")
+        print("Книга успешно добавлена.")
     except ValueError:
-        return "Ошибка: год должен быть числом."
+        logging.error("Ошибка: год должен быть числом.")
+        print("Ошибка: год должен быть числом.")
 
 
 def remove_book(library_service: LibraryService) -> str:
@@ -37,11 +40,14 @@ def remove_book(library_service: LibraryService) -> str:
     try:
         book_id = int(input("Введите ID книги для удаления: "))
         library_service.remove_book(book_id)
-        return "Книга успешно удалена."
+        logging.info(f"Книга с ID {book_id} успешно удалена.")
+        print("Книга успешно удалена.")
     except ValueError:
-        return "Ошибка: ID должен быть числом."
+        logging.error("Ошибка: ID должен быть числом.")
+        print("Ошибка: ID должен быть числом.")
     except Exception as e:
-        return f"Ошибка при удалении книги: {e}"
+        logging.error(f"Ошибка при удалении книги: {e}")
+        print(f"Ошибка при удалении книги: {e}")
 
 
 def search_books(library_service: LibraryService) -> None:
@@ -54,6 +60,7 @@ def search_books(library_service: LibraryService) -> None:
             print(
                 f"ID: {book.id}, Title: {book.title}, Author: {book.author}, Year: {book.year}, Status: {book.status}")
     else:
+        logging.info(f"Книги не найдены по запросу '{query}'.")
         print("Книги не найдены.")
 
 
@@ -66,6 +73,7 @@ def display_books(library_service: LibraryService) -> None:
             print(
                 f"ID: {book.id}, Title: {book.title}, Author: {book.author}, Year: {book.year}, Status: {book.status}")
     else:
+        logging.info("В библиотеке нет книг.")
         print("В библиотеке нет книг.")
 
 
@@ -79,13 +87,22 @@ def update_status(library_service: LibraryService) -> str:
             raise ValueError("Статус должен быть 'в наличии' или 'выдана'.")
 
         library_service.update_status(book_id, new_status)
-        return "Статус книги успешно обновлен."
+        logging.info(f"Статус книги с ID {book_id} успешно обновлен на '{new_status}'.")
+        print("Статус книги успешно обновлен.")
 
     except ValueError as e:
-        return f"Ошибка: {e}"
+        logging.error(f"Ошибка: {e}")
+        print(f"Ошибка: {e}")
     except Exception as e:
-        return f"Ошибка при обновлении статуса книги: {e}"
+        logging.error(f"Ошибка при обновлении статуса книги: {e}")
+        print(f"Ошибка при обновлении статуса книги: {e}")
 
+def exit_program(library_service) -> None:
+    """Сохраняет книги в файл и завершает программу."""
+    DataStorage.save_to_file('library.json', library_service.display_books())
+    logging.info("Выход из приложения.")
+    print("Выход из приложения.")
+    sys.exit(0)
 
 def main() -> None:
     """Основная функция для запуска приложения управления библиотекой."""
@@ -117,14 +134,8 @@ def main() -> None:
         if action:
             action()
         else:
+            logging.warning("Ошибка: неверный выбор. Пожалуйста, выберите опцию от 1 до 6.")
             print("Ошибка: неверный выбор. Пожалуйста, выберите опцию от 1 до 6.")
-
-
-def exit_program(library_service) -> None:
-    """Сохраняет книги в файл и завершает программу."""
-    DataStorage.save_to_file('library.json', library_service.display_books())
-    print("Выход из приложения.")
-    sys.exit(0)
 
 
 if __name__ == "__main__":
