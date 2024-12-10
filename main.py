@@ -32,7 +32,6 @@ def add_book(library_service: LibraryService) -> str:
         print("Книга успешно добавлена.")
     except ValueError:
         logging.error("Ошибка: год должен быть числом.")
-        print("Ошибка: год должен быть числом.")
 
 
 def remove_book(library_service: LibraryService) -> str:
@@ -44,10 +43,8 @@ def remove_book(library_service: LibraryService) -> str:
         print("Книга успешно удалена.")
     except ValueError:
         logging.error("Ошибка: ID должен быть числом.")
-        print("Ошибка: ID должен быть числом.")
     except Exception as e:
         logging.error(f"Ошибка при удалении книги: {e}")
-        print(f"Ошибка при удалении книги: {e}")
 
 
 def search_books(library_service: LibraryService) -> None:
@@ -95,7 +92,6 @@ def update_status(library_service: LibraryService) -> str:
         print(f"Ошибка: {e}")
     except Exception as e:
         logging.error(f"Ошибка при обновлении статуса книги: {e}")
-        print(f"Ошибка при обновлении статуса книги: {e}")
 
 def exit_program(library_service) -> None:
     """Сохраняет книги в файл и завершает программу."""
